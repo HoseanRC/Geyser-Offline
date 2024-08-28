@@ -167,6 +167,12 @@ force-resource-packs: true
 # Allows Xbox achievements to be unlocked.
 xbox-achievements-enabled: false
 
+# Allows player can join the server without logged in.
+# For Chinese player, It's hard to connect to Xbox service, It can help them.
+# WARNING: This option may cause some safety problems, so You'd better keep it enabled unless You really need it
+# NOTE: when disabling this, you will also have to disable floodgate and set the auth-type to offline
+xbox-auth-enabled: true
+
 # Whether player IP addresses will be logged by the server.
 log-player-ip-addresses: true
 

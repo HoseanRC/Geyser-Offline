@@ -99,6 +99,8 @@ public interface GeyserConfiguration {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isXboxAchievementsEnabled();
 
+    boolean isXboxAuthEnabled();
+
     int getCacheImages();
 
     boolean isAllowCustomSkulls();
