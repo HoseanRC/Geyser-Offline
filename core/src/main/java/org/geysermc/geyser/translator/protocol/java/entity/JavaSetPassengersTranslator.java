@@ -70,7 +70,7 @@ public class JavaSetPassengersTranslator extends PacketTranslator<ClientboundSet
             boolean rider = packet.getPassengerIds()[0] == passengerId;
             EntityLinkData.Type type = rider ? EntityLinkData.Type.RIDER : EntityLinkData.Type.PASSENGER;
             SetEntityLinkPacket linkPacket = new SetEntityLinkPacket();
-            linkPacket.setEntityLink(new EntityLinkData(entity.getGeyserId(), passenger.getGeyserId(), type, false, false));
+            linkPacket.setEntityLink(new EntityLinkData(entity.getGeyserId(), passenger.getGeyserId(), type, false, false, 0f));
             session.sendUpstreamPacket(linkPacket);
             newPassengers.add(passenger);
 
@@ -88,7 +88,7 @@ public class JavaSetPassengersTranslator extends PacketTranslator<ClientboundSet
             }
             if (!newPassengers.contains(passenger)) {
                 SetEntityLinkPacket linkPacket = new SetEntityLinkPacket();
-                linkPacket.setEntityLink(new EntityLinkData(entity.getGeyserId(), passenger.getGeyserId(), EntityLinkData.Type.REMOVE, false, false));
+                linkPacket.setEntityLink(new EntityLinkData(entity.getGeyserId(), passenger.getGeyserId(), EntityLinkData.Type.REMOVE, false, false, 0f));
                 session.sendUpstreamPacket(linkPacket);
 
                 passenger.setVehicle(null);
@@ -105,6 +105,10 @@ public class JavaSetPassengersTranslator extends PacketTranslator<ClientboundSet
                         // as of Java 1.19.3, but the scheduled future checks for the vehicle being null anyway.
                         session.getMountVehicleScheduledFuture().cancel(false);
                     }
+
+                    // Reset steering to avoid session#isHandsBusy from triggering
+                    session.setSteeringLeft(false);
+                    session.setSteeringRight(false);
 
                     if (entity instanceof ClientVehicle clientVehicle) {
                         clientVehicle.getVehicleComponent().onDismount();

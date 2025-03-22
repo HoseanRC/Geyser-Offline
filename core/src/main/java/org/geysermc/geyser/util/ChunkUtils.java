@@ -99,11 +99,18 @@ public class ChunkUtils {
             chunkPublisherUpdatePacket.setPosition(position);
             // Mitigates chunks not loading on 1.17.1 Paper and 1.19.3 Fabric. As of Bedrock 1.19.60.
             // https://github.com/GeyserMC/Geyser/issues/3490
-            chunkPublisherUpdatePacket.setRadius(GenericMath.ceil((session.getServerRenderDistance() + 1) * MathUtils.SQRT_OF_TWO) << 4);
+            chunkPublisherUpdatePacket.setRadius(squareToCircle(session.getServerRenderDistance()) << 4);
             session.sendUpstreamPacket(chunkPublisherUpdatePacket);
 
             session.setLastChunkPosition(newChunkPos);
         }
+    }
+
+    /**
+     * Converts a Java render distance number to the equivalent in Bedrock.
+     */
+    public static int squareToCircle(int renderDistance) {
+        return GenericMath.ceil((renderDistance + 1) * MathUtils.SQRT_OF_TWO);
     }
 
     /**
@@ -167,7 +174,7 @@ public class ChunkUtils {
             byteBuf.readBytes(payload);
 
             LevelChunkPacket data = new LevelChunkPacket();
-            data.setDimension(DimensionUtils.javaToBedrock(session.getBedrockDimension()));
+            data.setDimension(session.getBedrockDimension().bedrockId());
             data.setChunkX(chunkX);
             data.setChunkZ(chunkZ);
             data.setSubChunksLength(0);
@@ -206,13 +213,6 @@ public class ChunkUtils {
         JavaDimension dimension = session.getDimensionType();
         int minY = dimension.minY();
         int maxY = dimension.maxY();
-
-        if (minY % 16 != 0) {
-            throw new RuntimeException("Minimum Y must be a multiple of 16!");
-        }
-        if (maxY % 16 != 0) {
-            throw new RuntimeException("Maximum Y must be a multiple of 16!");
-        }
 
         BedrockDimension bedrockDimension = session.getBedrockDimension();
         // Yell in the console if the world height is too height in the current scenario
